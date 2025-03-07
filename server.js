@@ -23,7 +23,7 @@ const gethtml = async function(url) {
   const browser = await puppeteer.launch({
     headless: true, 
     args: ['--no-sandbox', '--disable-setuid-sandbox'],  
-    executablePath:"/usr/bin/google-chrome",
+    // executablePath:"/usr/bin/google-chrome",
     defaultViewport:{height:1920,width:1920}
   });
   const page = await browser.newPage();
