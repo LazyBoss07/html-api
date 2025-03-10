@@ -31,7 +31,7 @@ const gethtml = async function(url) {
 
   try {
     let htmlContent=null;
-    await page.goto(url,{ waitUntil: 'networkidle0',timeout:60000});
+    await page.goto(url,{ waitUntil: 'networkidle2',timeout:60000});
     if(url.includes('creepjs')) { 
     htmlContent = await creepjs(page);
     }else{
