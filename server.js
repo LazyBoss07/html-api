@@ -17,9 +17,10 @@ const initializeBrowser = async () => {
   browser = await puppeteer.launch({
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    // executablePath:"/usr/bin/google-chrome",
+    executablePath:"/usr/bin/google-chrome",
     defaultViewport: { height: 1920, width: 1920 },
   });
+  
 };
 
 initializeBrowser();
@@ -40,10 +41,11 @@ const fp = async function (page) {
     "clipboard-read",
     "clipboard-write",
     "clipboard-sanitized-write",
+    
   ]);
 
-  await page.bringToFront();
-  await page.waitForSelector('button[aria-label="Copy to clipboard"]',{waitUntil: 'networkidle0'});
+  // await page.bringToFront();
+  await page.waitForSelector('button[aria-label="Copy to clipboard"]',{timeout: 60000});
 
   const copyButtons = await page.$$('button[aria-label="Copy to clipboard"]');
   const title = await page.$$("h4");
@@ -107,7 +109,7 @@ const processPuppeteer = async function (url) {
 
   while (attempts < maxRetries) {
     try {
-      let response = await page.goto(url, { waitUntil: "networkidle0", timeout: 60000 });
+      let response = await page.goto(url, { waitUntil: "networkidle0", timeout: 90000 });
 
       // Check if the page navigated to about:blank or if the status code is not 200, and reload if necessary
       if (page.url() === 'about:blank' || response.status() !== 200) {
@@ -119,8 +121,13 @@ const processPuppeteer = async function (url) {
         htmlContent = await creepjs(page);
       } else if (url.includes("playground")) {
         htmlContent = await fp(page);
+      } else if (url.includes("amiunique")) {
+        await page.waitForSelector(".v-chip.theme--dark.v-size--default",{waitUntil:60000});
+        console.log("Got Amiunique");
+        htmlContent = await page.content();
       } else {
         await new Promise((r) => setTimeout(r, 10000));
+        // const context = page.browser().defaultBrowserContext();
         htmlContent = await page.content();
       }
       await page.close();
