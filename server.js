@@ -18,7 +18,7 @@ const initializeBrowser = async () => {
     headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
     executablePath:"/usr/bin/google-chrome",
-    defaultViewport: { height: 1920, width: 1920 },
+    defaultViewport: { height: 1920, width: 1200 },
   });
   
 };
@@ -40,8 +40,7 @@ const fp = async function (page) {
   await context.overridePermissions("https://demo.fingerprint.com/playground", [
     "clipboard-read",
     "clipboard-write",
-    "clipboard-sanitized-write",
-    
+    "clipboard-sanitized-write",   
   ]);
 
   // await page.bringToFront();
@@ -100,7 +99,9 @@ const fp = async function (page) {
 };
 
 const processPuppeteer = async function (url) {
-  const page = await browser.newPage();
+  const context= await browser.defaultBrowserContext();
+  // const context= await browser.createBrowserContext();
+  const page = await context.newPage();
   console.log("Navigating to the URL");
 
   const maxRetries = 3;
@@ -113,7 +114,7 @@ const processPuppeteer = async function (url) {
 
       // Check if the page navigated to about:blank or if the status code is not 200, and reload if necessary
       if (page.url() === 'about:blank' || response.status() !== 200) {
-        console.log('Page navigated to about:blank or did not return status 200, reloading...');
+        console.log(`Page navigated to about:blank or did not return status 200, reloading...${page.url()}`);
         response = await page.reload({ waitUntil: "networkidle0", timeout: 60000 });
       }
 
